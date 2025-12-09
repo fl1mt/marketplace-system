@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class OrderResponseDTO {
     private UUID id;
-    private UserResponseDTO
-    private DeliveryAddressResponseDTO;
+    private UserResponseDTO userResponseDTO;
+    private DeliveryAddressResponseDTO deliveryAddressResponseDTO;
     private LocalDate deliveryDate;
     private BigDecimal total;
     private List<OrderItemResponseDTO> items;
