@@ -8,14 +8,11 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(componentModel = "spring")
 public interface DeliveryAddressMapper {
 
     DeliveryAddress toEntity(DeliveryAddressRequestDTO requestDTO);
-
-    @Mapping(target = "userResponseDTO", source = "user")
     DeliveryAddressResponseDTO toDeliveryAddressDTO(DeliveryAddress deliveryAddress);
-
     List<DeliveryAddressResponseDTO> toDeliveryAddressesDto(List<DeliveryAddress> deliveryAddresses);
 
 }

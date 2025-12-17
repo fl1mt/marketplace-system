@@ -10,12 +10,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class, DeliveryAddressMapper.class})
 public interface OrderMapper {
-
     Order toEntity(OrderRequestDTO requestDTO);
-
-    @Mapping(target = "userResponseDTO", source = "user")
+    @Mapping(target = "userPublicDTO", source = "user")
     @Mapping(target = "deliveryAddressResponseDTO", source = "address")
     OrderResponseDTO toResponseDTO(Order order);
-
-    List<OrderResponseDTO> toOrderDtoList(List<Order> orders);
 }

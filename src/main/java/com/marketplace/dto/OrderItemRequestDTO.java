@@ -10,7 +10,6 @@ import java.util.UUID;
 public class OrderItemRequestDTO {
     @NotNull(message = "Product ID is required!")
     private UUID productId;
-
     @NotNull(message = "Quantity is required!")
     @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
@@ -18,8 +17,6 @@ public class OrderItemRequestDTO {
     private LocalDateTime createdAt;
     @JsonIgnore
     private LocalDateTime updatedAt;
-
-
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }

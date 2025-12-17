@@ -27,8 +27,16 @@ public class Order {
     private DeliveryAddress address;
     @Column(name = "delivery_date")
     private LocalDate deliveryDate;
+    @Column
+    private BigDecimal shippingCost;
     @Column(nullable = false)
-    private BigDecimal total;
+    private BigDecimal discountAmount;
+    @Column(nullable = false)
+    private BigDecimal subtotal;
+    @Column(nullable = false)
+    private BigDecimal finalTotal;
+    @Column
+    private String promoCode;
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -68,12 +76,12 @@ public class Order {
         return deliveryDate;
     }
 
-    public void setTotal(BigDecimal total) {
-        this.total = total;
+    public void setFinalTotal(BigDecimal finalTotal) {
+        this.finalTotal = finalTotal;
     }
 
-    public BigDecimal getTotal() {
-        return total;
+    public BigDecimal getFinalTotal() {
+        return finalTotal;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
@@ -93,4 +101,35 @@ public class Order {
     }
 
 
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setShippingCost(BigDecimal shippingCost) {
+        this.shippingCost = shippingCost;
+    }
+
+    public BigDecimal getShippingCost() {
+        return shippingCost;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public void setPromoCode(String promoCode) {
+        this.promoCode = promoCode;
+    }
+
+    public String getPromoCode() {
+        return promoCode;
+    }
 }

@@ -1,10 +1,12 @@
 package com.marketplace.entity;
 
 import jakarta.persistence.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.UUID;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "deliveryAddresses")
 public class DeliveryAddress {
     @Id

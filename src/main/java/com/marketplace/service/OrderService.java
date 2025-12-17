@@ -29,16 +29,18 @@ public class OrderService {
     private final OrdersRepository ordersRepository;
     private final OrderItemsRepository orderItemsRepository;
     private final ProductsRepository productsRepository;
+    private final DiscountStrategyService discountStrategyService;
 
     public OrderService(DataAuthService dataAuthService, OrderMapper orderMapper,
                         OrderItemMapper orderItemMapper, OrdersRepository ordersRepository,
-                        OrderItemsRepository orderItemsRepository, ProductsRepository productsRepository) {
+                        OrderItemsRepository orderItemsRepository, ProductsRepository productsRepository, DiscountStrategyService discountStrategyService) {
         this.dataAuthService = dataAuthService;
         this.orderMapper = orderMapper;
         this.orderItemMapper = orderItemMapper;
         this.ordersRepository = ordersRepository;
         this.orderItemsRepository = orderItemsRepository;
         this.productsRepository = productsRepository;
+        this.discountStrategyService = discountStrategyService;
     }
 
     @Transactional
@@ -50,8 +52,12 @@ public class OrderService {
         Order newOrder = orderMapper.toEntity(orderRequestDTO);
         newOrder.setUser(user);
         newOrder.setAddress(deliveryAddress);
-        newOrder.setTotal(BigDecimal.ZERO);
+        newOrder.setSubtotal(BigDecimal.ZERO);
+        newOrder.setFinalTotal(BigDecimal.ZERO);
+        newOrder.setDiscountAmount(BigDecimal.ZERO);
         Order savedOrder = ordersRepository.save(newOrder);
+
+        // deliveryDate + shipping cost
 
         BigDecimal totalAmount = BigDecimal.ZERO;
 
@@ -63,14 +69,20 @@ public class OrderService {
             orderItem.setOrder(savedOrder);
             orderItem.setProduct(product);
             orderItem.setQuantity(itemDTO.getQuantity());
-            orderItem.setPriceAtPurchase(product.getPrice());
+
+            orderItem.setPriceAtPurchase(product.getFinalPrice());
             orderItemsRepository.save(orderItem);
 
-            BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity()));
+            BigDecimal itemTotal = product.getFinalPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity()));
             totalAmount = totalAmount.add(itemTotal);
         }
 
-        savedOrder.setTotal(totalAmount);
+        savedOrder.setSubtotal(totalAmount);
+
+        BigDecimal discountAmount = discountStrategyService.calculateTotalOrderDiscount(savedOrder);
+        savedOrder.setDiscountAmount(discountAmount);
+        BigDecimal totalSumWithDiscount = savedOrder.getSubtotal().subtract(discountAmount);
+        savedOrder.setFinalTotal(totalSumWithDiscount);
         ordersRepository.save(savedOrder);
 
         List<OrderItem> items = orderItemsRepository.findByOrderIdWithProducts(savedOrder.getId());
@@ -103,12 +115,10 @@ public class OrderService {
         for (Order order: orders){
             OrderResponseDTO orderResponseDTO = orderMapper.toResponseDTO(order);
 
-            List<OrderItem> currentItems =itemsByOrderId.getOrDefault(order.getId(), List.of());
-
+            List<OrderItem> currentItems = itemsByOrderId.getOrDefault(order.getId(), List.of());
             List<OrderItemResponseDTO> itemsDTO = orderItemMapper.toOrderItemsListDTO(currentItems);
 
             orderResponseDTO.setItems(itemsDTO);
-
             responseDTOs.add(orderResponseDTO);
         }
 

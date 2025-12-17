@@ -3,9 +3,7 @@ package com.marketplace.dto;
 import java.util.UUID;
 
 public class DeliveryAddressResponseDTO {
-
     private UUID id;
-    private UserResponseDTO userResponseDTO;
     private String city;
     private String street;
     private String house;
@@ -18,14 +16,6 @@ public class DeliveryAddressResponseDTO {
 
     public UUID getId() {
         return id;
-    }
-
-    public void setUserResponseDTO(UserResponseDTO userResponseDTO) {
-        this.userResponseDTO = userResponseDTO;
-    }
-
-    public UserResponseDTO getUserResponseDTO() {
-        return userResponseDTO;
     }
 
     public void setCity(String city) {

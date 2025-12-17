@@ -7,13 +7,9 @@ import java.util.UUID;
 
 public class OrderItemResponseDTO {
     private UUID id;
-    private ProductResponseDTO productResponseDTO;
+    private ProductSnapshotDTO productSnapshotDTO;
     private Integer quantity;
     private BigDecimal priceAtPurchase;
-    @JsonIgnore
-    private LocalDateTime createdAt;
-    @JsonIgnore
-    private LocalDateTime updatedAt;
 
     public void setId(UUID id) {
         this.id = id;
@@ -21,14 +17,6 @@ public class OrderItemResponseDTO {
 
     public UUID getId() {
         return id;
-    }
-
-    public void setProductResponseDTO(ProductResponseDTO productResponseDTO) {
-        this.productResponseDTO = productResponseDTO;
-    }
-
-    public ProductResponseDTO getProductResponseDTO() {
-        return productResponseDTO;
     }
 
     public void setQuantity(Integer quantity) {
@@ -47,19 +35,11 @@ public class OrderItemResponseDTO {
         return priceAtPurchase;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setProductSnapshotDTO(ProductSnapshotDTO productSnapshotDTO) {
+        this.productSnapshotDTO = productSnapshotDTO;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public ProductSnapshotDTO getProductSnapshotDTO() {
+        return productSnapshotDTO;
     }
 }

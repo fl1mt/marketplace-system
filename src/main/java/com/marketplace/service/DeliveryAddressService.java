@@ -4,7 +4,7 @@ import com.marketplace.dto.DeliveryAddressRequestDTO;
 import com.marketplace.dto.DeliveryAddressResponseDTO;
 import com.marketplace.entity.DeliveryAddress;
 import com.marketplace.entity.User;
-import com.marketplace.exceptions.DuplicateAddressException;
+import com.marketplace.exceptions.DuplicateException;
 import com.marketplace.mapper.DeliveryAddressMapper;
 import com.marketplace.repository.DeliveryAddressesRepository;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class DeliveryAddressService {
         );
 
         if (existingAddress.isPresent()) {
-            throw new DuplicateAddressException("That's address has exists!");
+            throw new DuplicateException("That's address has exists!");
         }
 
         DeliveryAddress newDeliveryAddress = deliveryAddressMapper.toEntity(deliveryAddressRequestDTO);

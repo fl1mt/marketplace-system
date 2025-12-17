@@ -1,7 +1,6 @@
 package com.marketplace.entity;
-
+import com.marketplace.discount.ProductType;
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 @Entity
@@ -15,7 +14,19 @@ public class Product{
         @Column(columnDefinition = "TEXT", nullable = false)
         private String description;
         @Column(nullable = false)
-        private BigDecimal price;
+        @Enumerated(EnumType.STRING)
+        private ProductType category;
+        @Column(nullable = false)
+        private Integer discountPercentage;
+        @Column(nullable = false)
+        private Integer inventoryStock;
+        @Column(nullable = false)
+        private BigDecimal averageRating = BigDecimal.ZERO;
+        @Column(nullable = false)
+        private Long reviewCount = 0L;
+        @Column(nullable = false)
+        private BigDecimal basePrice;
+        private BigDecimal finalPrice;
 
         public void setId(UUID id) {
                 this.id = id;
@@ -41,11 +52,59 @@ public class Product{
                 return description;
         }
 
-        public void setPrice(BigDecimal price) {
-                this.price = price;
+        public void setDiscountPercentage(Integer discountPercentage) {
+                this.discountPercentage = discountPercentage;
         }
 
-        public BigDecimal getPrice() {
-                return price;
+        public Integer getDiscountPercentage() {
+                return discountPercentage;
+        }
+
+        public void setInventoryStock(Integer inventoryStock) {
+                this.inventoryStock = inventoryStock;
+        }
+
+        public Integer getInventoryStock() {
+                return inventoryStock;
+        }
+
+        public void setAverageRating(BigDecimal averageRating) {
+                this.averageRating = averageRating;
+        }
+
+        public BigDecimal getAverageRating() {
+                return averageRating;
+        }
+
+        public void setReviewCount(Long reviewCount) {
+                this.reviewCount = reviewCount;
+        }
+
+        public Long getReviewCount() {
+                return reviewCount;
+        }
+
+        public void setBasePrice(BigDecimal basePrice) {
+                this.basePrice = basePrice;
+        }
+
+        public BigDecimal getBasePrice() {
+                return basePrice;
+        }
+
+        public void setFinalPrice(BigDecimal finalPrice) {
+                this.finalPrice = finalPrice;
+        }
+
+        public BigDecimal getFinalPrice() {
+                return finalPrice;
+        }
+
+        public void setCategory(ProductType category) {
+                this.category = category;
+        }
+
+        public ProductType getCategory() {
+                return category;
         }
 }

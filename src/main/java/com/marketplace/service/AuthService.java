@@ -64,16 +64,15 @@ public class AuthService {
             throw new RuntimeException("User with this email already exists");
         }
 
+        // add mapper
         User user = new User();
         user.setFirstname(request.getFirstname());
         user.setLastname(request.getLastname());
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
         user.setPhoneNumber(request.getPhoneNumber());
+        user.setRole("USER");
         userRepository.save(user);
-
-
-
         return userMapper.toResponseDTO(user);
     }
 }
