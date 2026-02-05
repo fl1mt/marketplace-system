@@ -2,9 +2,9 @@ package com.marketplace.events;
 
 import java.math.BigDecimal;
 
-public class DeliveryCalculatedEvent {
+public record DeliveryCalculatedEvent(
+        Long orderId,
+        int deliveryDays,
+        BigDecimal deliveryPrice
+) {}
 
-    private String orderId;
-    private String userId;
-    private BigDecimal totalPrice;
-}
