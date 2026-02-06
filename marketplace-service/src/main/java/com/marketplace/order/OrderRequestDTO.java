@@ -1,13 +1,14 @@
 package com.marketplace.order;
 import com.marketplace.orderItem.OrderItemRequestDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public class OrderRequestDTO {
-    @NotBlank(message = "Delivery address is required!")
+    @NotNull(message = "Delivery address is required!")
     private UUID deliveryAddressId;
     private LocalDate deliveryDate;
     private List<OrderItemRequestDTO> items;

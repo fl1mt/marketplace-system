@@ -22,15 +22,15 @@ public class DeliveryCalculatedConsumer {
     )
     public void consume(DeliveryCalculatedEvent event) {
 
-        Order order = ordersRepository.findById(event.getOrderId())
+        Order order = ordersRepository.findById(event.orderId())
                 .orElseThrow(() ->
                         new NotFoundException(
-                                "Order not found for delivery calculation. orderId=" + event.getOrderId()
+                                "Order not found for delivery calculation. orderId=" + event.orderId()
                         )
                 );
 
-        order.setDeliveryDate(event.getDeliveryDate());
-        order.setShippingCost(event.getDeliveryPrice());
+        order.setDeliveryDate(event.deliveryDate());
+        order.setShippingCost(event.deliveryPrice());
 
         ordersRepository.save(order);
     }

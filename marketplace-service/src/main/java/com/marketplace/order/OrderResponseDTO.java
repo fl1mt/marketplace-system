@@ -15,6 +15,7 @@ public class OrderResponseDTO {
     private UserPublicDTO userPublicDTO;
     private DeliveryAddressResponseDTO deliveryAddressResponseDTO;
     private LocalDate deliveryDate;
+    private BigDecimal shippingCost;
     private BigDecimal subtotal;
     private BigDecimal finalTotal;
     private List<OrderItemResponseDTO> items;
@@ -82,5 +83,13 @@ public class OrderResponseDTO {
 
     public UserPublicDTO getUserPublicDTO() {
         return userPublicDTO;
+    }
+
+    public void setShippingCost(BigDecimal shippingCost) {
+        this.shippingCost = shippingCost;
+    }
+
+    public BigDecimal getShippingCost() {
+        return shippingCost;
     }
 }

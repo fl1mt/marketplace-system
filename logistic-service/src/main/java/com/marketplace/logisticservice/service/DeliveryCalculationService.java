@@ -23,7 +23,7 @@ public class DeliveryCalculationService {
         LocalDate deliveryDate = LocalDate.now().plusDays(3);
         DeliveryCalculatedEvent result =
                 new DeliveryCalculatedEvent(
-                        event.getOrderId(),
+                        event.orderId(),
                         deliveryPrice,
                         deliveryDate
                 );

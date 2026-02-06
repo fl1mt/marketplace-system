@@ -27,12 +27,12 @@ public class ProductController {
     }
     @PutMapping("/{productId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable UUID productId, @RequestBody @Valid ProductRequestDTO productRequestDTO){
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable("productId") UUID productId, @RequestBody @Valid ProductRequestDTO productRequestDTO){
         return ResponseEntity.ok(productService.updateProduct(productId, productRequestDTO));
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable UUID productId){
+    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable("productId") UUID productId){
         return ResponseEntity.ok(productService.getProduct(productId));
     }
 }

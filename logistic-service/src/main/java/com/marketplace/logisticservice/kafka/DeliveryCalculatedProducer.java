@@ -17,7 +17,7 @@ public class DeliveryCalculatedProducer {
     public void send(DeliveryCalculatedEvent event) {
         kafkaTemplate.send(
                 "delivery-calculated",
-                event.getOrderId().toString(),
+                event.orderId().toString(),
                 event
         );
     }
