@@ -1,5 +1,6 @@
 package com.marketplace.kafka.producer;
 import com.marketplace.events.OrderCreatedEvent;
+import com.marketplace.order.Order;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +13,20 @@ public class OrderEventProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void send(OrderCreatedEvent event) {
+    public void sendOrderCreatedEvent(Order order) {
+
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                order.getId(),
+                order.getUser().getId(),
+                order.getAddress().getCity(),
+                String.join(" ", order.getAddress().getStreet(), order.getAddress().getHouse(), order.getAddress().getApartment()),
+                order.getAddress().getIndex()
+        );
 
         kafkaTemplate.send(
                 "order-created",
-                event.getOrderId(),
+                order.getId().toString(),
                 event
         );
-
-        //log.info("Order event sent: {}", event.getOrderId());
     }
 }

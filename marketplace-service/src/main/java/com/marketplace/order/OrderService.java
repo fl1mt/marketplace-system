@@ -1,6 +1,7 @@
 package com.marketplace.order;
 
 import com.marketplace.delivery.DeliveryAddress;
+import com.marketplace.kafka.producer.OrderEventProducer;
 import com.marketplace.order.orderDiscount.OrderDiscountService;
 import com.marketplace.orderItem.OrderItem;
 import com.marketplace.orderItem.OrderItemRequestDTO;
@@ -32,10 +33,11 @@ public class OrderService {
     private final OrderItemsRepository orderItemsRepository;
     private final ProductsRepository productsRepository;
     private final OrderDiscountService discountStrategyService;
+    private final OrderEventProducer orderEventProducer;
 
     public OrderService(DataAuthService dataAuthService, OrderMapper orderMapper,
                         OrderItemMapper orderItemMapper, OrdersRepository ordersRepository,
-                        OrderItemsRepository orderItemsRepository, ProductsRepository productsRepository, OrderDiscountService discountStrategyService) {
+                        OrderItemsRepository orderItemsRepository, ProductsRepository productsRepository, OrderDiscountService discountStrategyService, OrderEventProducer orderEventProducer) {
         this.dataAuthService = dataAuthService;
         this.orderMapper = orderMapper;
         this.orderItemMapper = orderItemMapper;
@@ -43,6 +45,7 @@ public class OrderService {
         this.orderItemsRepository = orderItemsRepository;
         this.productsRepository = productsRepository;
         this.discountStrategyService = discountStrategyService;
+        this.orderEventProducer = orderEventProducer;
     }
 
     @Transactional
@@ -59,7 +62,7 @@ public class OrderService {
         newOrder.setDiscountAmount(BigDecimal.ZERO);
         Order savedOrder = ordersRepository.save(newOrder);
 
-        // deliveryDate + shipping cost
+        orderEventProducer.sendOrderCreatedEvent(newOrder);
 
         BigDecimal totalAmount = BigDecimal.ZERO;
 
