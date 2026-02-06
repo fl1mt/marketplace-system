@@ -3,13 +3,8 @@ package com.marketplace.kafka.consumer;
 import com.marketplace.errors.NotFoundException;
 import com.marketplace.events.DeliveryCalculatedEvent;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.stereotype.Service;
-
-import com.marketplace.events.DeliveryCalculatedEvent;
 import com.marketplace.order.Order;
 import com.marketplace.order.OrdersRepository;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
