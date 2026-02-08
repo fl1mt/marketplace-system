@@ -18,7 +18,7 @@ public class DeliveryCalculationService {
     }
 
     public void calculateAndSend(OrderCreatedEvent event) {
-
+        // временная "Затычка" доставки заказа со статичными данными
         BigDecimal deliveryPrice = BigDecimal.valueOf(500);
         LocalDate deliveryDate = LocalDate.now().plusDays(3);
         DeliveryCalculatedEvent result =
