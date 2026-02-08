@@ -1,6 +1,7 @@
 package com.marketplace.order;
 
 import com.marketplace.delivery.DeliveryAddress;
+import com.marketplace.errors.BadRequestException;
 import com.marketplace.kafka.producer.OrderEventProducer;
 import com.marketplace.order.orderDiscount.OrderDiscountService;
 import com.marketplace.orderItem.OrderItem;
@@ -51,52 +52,21 @@ public class OrderService {
     @Transactional
     public OrderResponseDTO createUsersOrder(UUID userId,
                                              OrderRequestDTO orderRequestDTO){
+        validateOrderRequest(orderRequestDTO);
+
         User user = dataAuthService.checkUsersId(userId);
         DeliveryAddress deliveryAddress = dataAuthService.checkUsersDeliveryAddress(orderRequestDTO.getDeliveryAddressId(), userId);
-        if(deliveryAddress == null){ throw new NotFoundException("Delivery address not found!");};
 
-        Order newOrder = orderMapper.toEntity(orderRequestDTO);
-        newOrder.setUser(user);
-        newOrder.setAddress(deliveryAddress);
-        newOrder.setSubtotal(BigDecimal.ZERO);
-        newOrder.setFinalTotal(BigDecimal.ZERO);
-        newOrder.setDiscountAmount(BigDecimal.ZERO);
-        Order savedOrder = ordersRepository.save(newOrder);
+        Order newOrder = createDraftOrder(user, deliveryAddress, orderRequestDTO);
+
+        List<OrderItem> orderItems = createOrderItems(newOrder, orderRequestDTO.getItems());
+
+        calculateTotals(newOrder, orderItems);
+
+        ordersRepository.save(newOrder);
 
         orderEventProducer.sendOrderCreatedEvent(newOrder);
-
-        BigDecimal totalAmount = BigDecimal.ZERO;
-
-        for (OrderItemRequestDTO itemDTO : orderRequestDTO.getItems()){
-            Product product = productsRepository.findById(itemDTO.getProductId())
-                    .orElseThrow(() -> new NotFoundException("Product not found! id: " + itemDTO.getProductId()));
-
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(savedOrder);
-            orderItem.setProduct(product);
-            orderItem.setQuantity(itemDTO.getQuantity());
-
-            orderItem.setPriceAtPurchase(product.getFinalPrice());
-            orderItemsRepository.save(orderItem);
-
-            BigDecimal itemTotal = product.getFinalPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity()));
-            totalAmount = totalAmount.add(itemTotal);
-        }
-
-        savedOrder.setSubtotal(totalAmount);
-
-        BigDecimal discountAmount = discountStrategyService.calculateTotalOrderDiscount(savedOrder);
-        savedOrder.setDiscountAmount(discountAmount);
-        BigDecimal totalSumWithDiscount = savedOrder.getSubtotal().subtract(discountAmount);
-        savedOrder.setFinalTotal(totalSumWithDiscount);
-        ordersRepository.save(savedOrder);
-
-        List<OrderItem> items = orderItemsRepository.findByOrderIdWithProducts(savedOrder.getId());
-        List<OrderItemResponseDTO> orderItemsDTO = orderItemMapper.toOrderItemsListDTO(items);
-
-        OrderResponseDTO orderResponseDTO = orderMapper.toResponseDTO(savedOrder);
-        orderResponseDTO.setItems(orderItemsDTO);
-        return orderResponseDTO;
+        return buildResponse(newOrder, orderItems);
     }
 
     public List<OrderResponseDTO> getUsersOrders(UUID userId){
@@ -126,10 +96,72 @@ public class OrderService {
 
             orderResponseDTO.setItems(itemsDTO);
             responseDTOs.add(orderResponseDTO);
-            System.out.println(order.getShippingCost() + "--------");
-
         }
 
         return responseDTOs;
     }
+
+    private void validateOrderRequest(OrderRequestDTO request) {
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new BadRequestException("Order must contain at least one item");
+        }
+    }
+
+    private Order createDraftOrder(User user, DeliveryAddress address, OrderRequestDTO request) {
+        Order order = orderMapper.toEntity(request);
+        order.setUser(user);
+        order.setAddress(address);
+        order.setSubtotal(BigDecimal.ZERO);
+        order.setDiscountAmount(BigDecimal.ZERO);
+        order.setFinalTotal(BigDecimal.ZERO);
+        return ordersRepository.save(order);
+    }
+
+    private List<OrderItem> createOrderItems(Order order, List<OrderItemRequestDTO> items) {
+
+        List<OrderItem> result = new ArrayList<>();
+
+        for (OrderItemRequestDTO itemDTO : items) {
+            Product product = productsRepository.findById(itemDTO.getProductId())
+                    .orElseThrow(() ->
+                            new NotFoundException("Product not found, id=" + itemDTO.getProductId())
+                    );
+
+            OrderItem item = new OrderItem();
+            item.setOrder(order);
+            item.setProduct(product);
+            item.setQuantity(itemDTO.getQuantity());
+            item.setPriceAtPurchase(product.getFinalPrice());
+
+            result.add(orderItemsRepository.save(item));
+        }
+
+        return result;
+    }
+
+    private void calculateTotals(Order order, List<OrderItem> items) {
+
+        BigDecimal subtotal = items.stream()
+                .map(item ->
+                        item.getPriceAtPurchase()
+                                .multiply(BigDecimal.valueOf(item.getQuantity()))
+                )
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        order.setSubtotal(subtotal);
+
+        BigDecimal discount = discountStrategyService.calculateTotalOrderDiscount(order);
+        order.setDiscountAmount(discount);
+
+        order.setFinalTotal(subtotal.subtract(discount));
+    }
+
+    private OrderResponseDTO buildResponse(Order order, List<OrderItem> items) {
+        OrderResponseDTO dto = orderMapper.toResponseDTO(order);
+        dto.setItems(orderItemMapper.toOrderItemsListDTO(items));
+        return dto;
+    }
+
+
+
 }
