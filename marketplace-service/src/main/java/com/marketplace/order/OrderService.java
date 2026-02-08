@@ -53,6 +53,7 @@ public class OrderService {
                                              OrderRequestDTO orderRequestDTO){
         User user = dataAuthService.checkUsersId(userId);
         DeliveryAddress deliveryAddress = dataAuthService.checkUsersDeliveryAddress(orderRequestDTO.getDeliveryAddressId(), userId);
+        if(deliveryAddress == null){ throw new NotFoundException("Delivery address not found!");};
 
         Order newOrder = orderMapper.toEntity(orderRequestDTO);
         newOrder.setUser(user);
