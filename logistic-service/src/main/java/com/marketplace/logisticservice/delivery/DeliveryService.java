@@ -29,17 +29,12 @@ public class DeliveryService {
 
     @Transactional
     public void calculateAndSend(OrderCreatedEvent event) {
-
-        Delivery delivery = new Delivery();
-        delivery.setOrderId(event.orderId());
-        delivery.setDeliveryStatus(DeliveryStatus.CREATED);
-
-        deliveryRepository.save(delivery);
-
         // временная заглушка
         BigDecimal deliveryPrice = BigDecimal.valueOf(500);
         LocalDate deliveryDate = LocalDate.now().plusDays(3);
 
+        Delivery delivery = new Delivery();
+        delivery.setOrderId(event.orderId());
         delivery.setShippingCost(deliveryPrice);
         delivery.setDeliveryDate(deliveryDate);
         delivery.setDeliveryStatus(DeliveryStatus.CONFIRMED);
@@ -55,6 +50,5 @@ public class DeliveryService {
 
         deliveryCalculatedProducer.send(result);
     }
-
 }
 
