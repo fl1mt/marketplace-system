@@ -1,6 +1,6 @@
 package com.marketplace.order;
 
-public enum OrderStatuses {
+public enum OrderStatus {
     CREATED,
     DELIVERY_REQUESTED,
     DELIVERY_CONFIRMED,

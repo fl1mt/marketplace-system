@@ -30,6 +30,9 @@ public class Order {
     @Column
     private BigDecimal shippingCost;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+    @Column(nullable = false)
     private BigDecimal discountAmount;
     @Column(nullable = false)
     private BigDecimal subtotal;
@@ -131,5 +134,13 @@ public class Order {
 
     public String getPromoCode() {
         return promoCode;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
     }
 }
