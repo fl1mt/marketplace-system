@@ -1,6 +1,8 @@
 package com.marketplace.kafka.producer;
 import com.marketplace.events.OrderCreatedEvent;
 import com.marketplace.order.Order;
+import com.marketplace.order.OrderStatus;
+import com.marketplace.order.OrdersRepository;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Service;
 public class OrderEventProducer {
 
     private final KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
-
     public OrderEventProducer(KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }

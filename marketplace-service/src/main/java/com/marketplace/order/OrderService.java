@@ -64,8 +64,10 @@ public class OrderService {
         calculateTotals(newOrder, orderItems);
 
         ordersRepository.save(newOrder);
+        newOrder.setOrderStatus(OrderStatus.CREATED);
 
-        orderEventProducer.sendOrderCreatedEvent(newOrder);
+        requestDelivery(newOrder);
+
         return buildResponse(newOrder, orderItems);
     }
 
@@ -160,6 +162,14 @@ public class OrderService {
         OrderResponseDTO dto = orderMapper.toResponseDTO(order);
         dto.setItems(orderItemMapper.toOrderItemsListDTO(items));
         return dto;
+    }
+
+    private void requestDelivery(Order order) {
+
+        order.setOrderStatus(OrderStatus.DELIVERY_REQUESTED);
+        ordersRepository.save(order);
+
+        orderEventProducer.sendOrderCreatedEvent(order);
     }
 
 
