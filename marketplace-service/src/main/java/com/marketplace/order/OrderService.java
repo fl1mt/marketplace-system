@@ -64,7 +64,6 @@ public class OrderService {
         calculateTotals(newOrder, orderItems);
 
         ordersRepository.save(newOrder);
-        newOrder.setOrderStatus(OrderStatus.CREATED);
 
         requestDelivery(newOrder);
 
@@ -116,6 +115,7 @@ public class OrderService {
         order.setSubtotal(BigDecimal.ZERO);
         order.setDiscountAmount(BigDecimal.ZERO);
         order.setFinalTotal(BigDecimal.ZERO);
+        order.setOrderStatus(OrderStatus.CREATED);
         return ordersRepository.save(order);
     }
 
