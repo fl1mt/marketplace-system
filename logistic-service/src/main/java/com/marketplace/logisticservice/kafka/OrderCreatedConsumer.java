@@ -1,6 +1,6 @@
 package com.marketplace.logisticservice.kafka;
 import com.marketplace.events.OrderCreatedEvent;
-import com.marketplace.logisticservice.service.DeliveryService;
+import com.marketplace.logisticservice.delivery.DeliveryService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
