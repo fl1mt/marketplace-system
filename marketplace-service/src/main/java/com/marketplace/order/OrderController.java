@@ -21,7 +21,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createUsersOrder(userDetails.getId(), orderRequestDTO));
     }
     @GetMapping
-    public ResponseEntity<List<OrderResponseDTO>> getUserOrders(@AuthenticationPrincipal CustomUserDetails userDetails){
-        return ResponseEntity.ok(orderService.getUsersOrders(userDetails.getId()));
+    public ResponseEntity<List<OrderResponseDTO>> getUserOrders(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                @RequestParam(name = "onlyActiveOrders", defaultValue = "true")
+                                                                boolean onlyActiveOrders){
+        return ResponseEntity.ok(orderService.getUsersOrders(userDetails.getId(), onlyActiveOrders));
     }
 }

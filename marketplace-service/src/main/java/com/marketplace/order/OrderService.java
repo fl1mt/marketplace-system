@@ -70,9 +70,12 @@ public class OrderService {
         return buildResponse(newOrder, orderItems);
     }
 
-    public List<OrderResponseDTO> getUsersOrders(UUID userId){
+    public List<OrderResponseDTO> getUsersOrders(UUID userId, boolean onlyActiveOrders){
         User user = dataAuthService.checkUsersId(userId);
-        List<Order> orders = ordersRepository.findAllByUserId(user.getId());
+
+        List<Order> orders = onlyActiveOrders ? ordersRepository.findAllByUserId(user.getId())
+                : ordersRepository.findByUserIdAndOrderStatusNotIn(userId,
+                List.of(OrderStatus.COMPLETED, OrderStatus.CANCELED));
 
         if(orders.isEmpty()){
             return List.of();
