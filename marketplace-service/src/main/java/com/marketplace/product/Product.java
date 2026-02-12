@@ -27,6 +27,8 @@ public class Product{
         @Column(nullable = false)
         private BigDecimal basePrice;
         private BigDecimal finalPrice;
+        @Version
+        private Long version;
 
         public void setId(UUID id) {
                 this.id = id;
@@ -106,5 +108,13 @@ public class Product{
 
         public ProductType getCategory() {
                 return category;
+        }
+
+        public void setVersion(Long version) {
+                this.version = version;
+        }
+
+        public Long getVersion() {
+                return version;
         }
 }
