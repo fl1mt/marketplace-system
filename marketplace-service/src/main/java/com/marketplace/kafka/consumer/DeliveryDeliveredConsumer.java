@@ -8,6 +8,8 @@ import com.marketplace.order.OrdersRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class DeliveryDeliveredConsumer {
     private final OrdersRepository ordersRepository;
@@ -30,6 +32,7 @@ public class DeliveryDeliveredConsumer {
                         )
                 );
         order.setOrderStatus(OrderStatus.WAITING_FOR_RECEIVE);
+        order.setDeliveryDate(LocalDate.now());
         // add notification service
         ordersRepository.save(order);
     }
