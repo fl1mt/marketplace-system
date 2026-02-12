@@ -32,16 +32,18 @@ public class OrderService {
     private final OrdersRepository ordersRepository;
     private final OrderItemsRepository orderItemsRepository;
     private final OrderEventProducer orderEventProducer;
+    private final StockService stockService;
 
     public OrderService(DataAuthService dataAuthService, OrderMapper orderMapper,
                         OrderItemMapper orderItemMapper, OrdersRepository ordersRepository,
-                        OrderItemsRepository orderItemsRepository, OrderEventProducer orderEventProducer) {
+                        OrderItemsRepository orderItemsRepository, OrderEventProducer orderEventProducer, StockService stockService) {
         this.dataAuthService = dataAuthService;
         this.orderMapper = orderMapper;
         this.orderItemMapper = orderItemMapper;
         this.ordersRepository = ordersRepository;
         this.orderItemsRepository = orderItemsRepository;
         this.orderEventProducer = orderEventProducer;
+        this.stockService = stockService;
     }
 
     @Transactional
@@ -57,6 +59,8 @@ public class OrderService {
 
         List<OrderItem> orderItems = createOrderItems(newOrder, orderRequestDTO.getItems());
         orderItemsRepository.saveAll(orderItems);
+
+        stockService.reserveStock(orderItems);
 
         requestDelivery(newOrder);
 

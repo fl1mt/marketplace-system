@@ -44,7 +44,6 @@ public class DeliveryCalculatedConsumer {
 
         List<OrderItem> orderItems = dataAuthService.checkOrderItemsByOrder(order.getId());
 
-        stockService.reserveStock(orderItems);
         orderPricingService.calculateTotals(order, orderItems);
 
         order.setOrderStatus(OrderStatus.DELIVERY_CONFIRMED);
