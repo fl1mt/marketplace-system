@@ -1,4 +1,4 @@
-package notification;
+package com.marketplace.notificationservice.notification;
 
 import org.mapstruct.Mapper;
 

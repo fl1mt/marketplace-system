@@ -1,10 +1,8 @@
-package notification;
+package com.marketplace.notificationservice.notification;
 
-import jakarta.persistence.*;
-import notification.enums.NotificationChannel;
-import notification.enums.NotificationStatus;
-import notification.enums.NotificationType;
-import org.springframework.data.annotation.CreatedDate;
+import com.marketplace.notificationservice.notification.enums.NotificationChannel;
+import com.marketplace.notificationservice.notification.enums.NotificationStatus;
+import com.marketplace.notificationservice.notification.enums.NotificationType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

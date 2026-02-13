@@ -1,8 +1,8 @@
-package notification;
+package com.marketplace.notificationservice.notification;
+import com.marketplace.notificationservice.notification.enums.NotificationType;
 import jakarta.persistence.*;
-import notification.enums.NotificationChannel;
-import notification.enums.NotificationStatus;
-import notification.enums.NotificationType;
+import com.marketplace.notificationservice.notification.enums.NotificationChannel;
+import com.marketplace.notificationservice.notification.enums.NotificationStatus;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -16,10 +16,8 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private UUID userId;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType type;
@@ -39,7 +37,9 @@ public class Notification {
     @Column(nullable = false)
     private String recipient;
     @CreatedDate
+    @Column
     private LocalDateTime createdAt;
+    @Column
     private LocalDateTime sentAt;
 
     public void setId(Long id){

@@ -1,4 +1,4 @@
-package notification;
+package com.marketplace.notificationservice.notification;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

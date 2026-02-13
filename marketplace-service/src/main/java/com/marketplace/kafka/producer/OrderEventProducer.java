@@ -35,7 +35,7 @@ public class OrderEventProducer {
     public void sendOrderChangedStatusEvent(Order order){
 
         OrderStatusChangedEvent event = new OrderStatusChangedEvent(
-                order.getOrderStatus().toString(),
+                order.getOrderStatus(),
                 order.getUser().getId(),
                 order.getId(),
                 order.getUser().getEmail(),
