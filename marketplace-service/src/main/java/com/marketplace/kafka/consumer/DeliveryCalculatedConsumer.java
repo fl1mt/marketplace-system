@@ -1,12 +1,15 @@
 package com.marketplace.kafka.consumer;
 
 import com.marketplace.events.DeliveryCalculatedEvent;
+import com.marketplace.kafka.producer.OrderEventProducer;
 import com.marketplace.order.*;
 import com.marketplace.orderItem.OrderItem;
 import com.marketplace.user.auth.DataAuthService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -15,15 +18,16 @@ public class DeliveryCalculatedConsumer {
 
     private final OrdersRepository ordersRepository;
     private final OrderPricingService orderPricingService;
+    private final OrderEventProducer producer;
     private final DataAuthService dataAuthService;
-    private final StockService stockService;
 
     public DeliveryCalculatedConsumer(OrdersRepository ordersRepository,
-                                      OrderPricingService orderPricingService, DataAuthService dataAuthService, StockService stockService) {
+                                      OrderPricingService orderPricingService,
+                                      OrderEventProducer producer, DataAuthService dataAuthService) {
         this.ordersRepository = ordersRepository;
         this.orderPricingService = orderPricingService;
+        this.producer = producer;
         this.dataAuthService = dataAuthService;
-        this.stockService = stockService;
     }
 
     @Transactional
@@ -48,6 +52,15 @@ public class DeliveryCalculatedConsumer {
 
         order.setOrderStatus(OrderStatus.DELIVERY_CONFIRMED);
         ordersRepository.save(order);
+
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        producer.sendOrderChangedStatusEvent(order);
+                    }
+                }
+        );
     }
 }
 

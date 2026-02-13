@@ -21,9 +21,6 @@ public class NotificationService {
     @Transactional
     public void sendNotification(OrderStatusChangedEvent event){
         Notification notification = new Notification();
-
-        notification.setUserId(event.userId());
-
         NotificationType type;
 
         try {
@@ -32,8 +29,8 @@ public class NotificationService {
             throw new BadRequestException("Unsupported notification type: " + event.status());
         }
 
+        notification.setUserId(event.userId());
         notification.setType(type);
-
         notification.setChannel(resolveChannel(notification.getType()));
         notification.setRecipient(getNotificationRecipient(notification.getChannel(), event));
         notification.setStatus(NotificationStatus.PENDING);
