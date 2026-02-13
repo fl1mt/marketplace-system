@@ -5,6 +5,7 @@ import com.marketplace.events.DeliveryInTransitEvent;
 import com.marketplace.order.Order;
 import com.marketplace.order.OrderStatus;
 import com.marketplace.order.OrdersRepository;
+import com.marketplace.user.auth.DataAuthService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Component;
 public class DeliveryInTransitConsumer {
 
     private final OrdersRepository ordersRepository;
+    private final DataAuthService dataAuthService;
 
-    public DeliveryInTransitConsumer(OrdersRepository ordersRepository) {
+    public DeliveryInTransitConsumer(OrdersRepository ordersRepository, DataAuthService dataAuthService) {
         this.ordersRepository = ordersRepository;
+        this.dataAuthService = dataAuthService;
     }
 
     @KafkaListener(
@@ -23,12 +26,7 @@ public class DeliveryInTransitConsumer {
     )
     public void consume(DeliveryInTransitEvent event) {
 
-        Order order = ordersRepository.findById(event.orderId())
-                .orElseThrow(() ->
-                        new NotFoundException(
-                                "Order not found for in-transit event. orderId=" + event.orderId()
-                        )
-                );
+        Order order = dataAuthService.checkOrder(event.orderId());
 
         if (order.getOrderStatus() == OrderStatus.IN_TRANSIT) {
             return;
