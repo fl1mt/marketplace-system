@@ -28,4 +28,17 @@ public class StockService {
             }
         }
     }
+
+    @Transactional
+    public void returnStockWhenOrderCanceled(List<OrderItem> items){
+        for (OrderItem item : items) {
+            int updated = productsRepository.returnStock(
+                    item.getProduct().getId(), item.getQuantity());
+
+            if(updated == 0){
+                throw new BadRequestException("Product not found! Product id: " +
+                        item.getProduct().getId());
+            }
+        }
+    }
 }

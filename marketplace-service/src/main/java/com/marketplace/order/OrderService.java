@@ -72,7 +72,7 @@ public class OrderService {
         User user = dataAuthService.checkUsersId(userId);
 
         List<Order> orders = onlyActiveOrders ? ordersRepository.findByUserIdAndOrderStatusNotIn(user.getId(),
-                List.of(OrderStatus.COMPLETED, OrderStatus.CANCELED_BY_USER, OrderStatus.CANCELED)) :
+                List.of(OrderStatus.COMPLETED, OrderStatus.CANCELLED_BY_USER, OrderStatus.CANCELLED)) :
         ordersRepository.findAllByUserId(user.getId());
 
         if(orders.isEmpty()){
@@ -108,14 +108,15 @@ public class OrderService {
         Order order = dataAuthService.checkOrdersAffiliation(orderId, userId);
 
         switch (order.getOrderStatus()){
-            case DELIVERY_CONFIRMED -> {} // logistic service send kafka event
+            case DELIVERY_CONFIRMED, WAITING_FOR_RECEIVE -> {
+                stockService.returnStockWhenOrderCanceled
+                        (orderItemsRepository.findByOrderIdWithProducts(orderId));
+                orderEventProducer.sendOrderCancelledEvent(order);
+            }
             case IN_TRANSIT -> throw new BadRequestException
                     ("The order is on the way. You can cancel it when it arrives.");
-            case WAITING_FOR_RECEIVE -> { }// logistic service send kafka event
-            default -> {
-                order.setOrderStatus(OrderStatus.CANCELED_BY_USER);}
         };
-
+        order.setOrderStatus(OrderStatus.CANCELLED_BY_USER);
         ordersRepository.save(order);
 
         TransactionSynchronizationManager.registerSynchronization(

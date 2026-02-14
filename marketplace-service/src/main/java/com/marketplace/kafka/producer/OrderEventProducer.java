@@ -1,4 +1,5 @@
 package com.marketplace.kafka.producer;
+import com.marketplace.events.OrderCancelledEvent;
 import com.marketplace.events.OrderCreatedEvent;
 import com.marketplace.events.OrderStatusChangedEvent;
 import com.marketplace.order.Order;
@@ -42,6 +43,14 @@ public class OrderEventProducer {
 
         kafkaTemplate.send(
                 "order-status-changed",
+                order.getId().toString(),
+                event
+        );
+    }
+    public void sendOrderCancelledEvent(Order order){
+        OrderCancelledEvent event = new OrderCancelledEvent(order.getId());
+        kafkaTemplate.send(
+                "order-cancelled",
                 order.getId().toString(),
                 event
         );
