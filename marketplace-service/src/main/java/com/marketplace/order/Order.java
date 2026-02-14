@@ -1,6 +1,7 @@
 package com.marketplace.order;
 
 import com.marketplace.delivery.DeliveryAddress;
+import com.marketplace.events.OrderStatus;
 import com.marketplace.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,6 +1,7 @@
 package com.marketplace.kafka.consumer;
 
 import com.marketplace.events.DeliveryCalculatedEvent;
+import com.marketplace.events.OrderStatus;
 import com.marketplace.kafka.producer.OrderEventProducer;
 import com.marketplace.order.*;
 import com.marketplace.orderItem.OrderItem;
@@ -57,6 +58,7 @@ public class DeliveryCalculatedConsumer {
                 new TransactionSynchronization() {
                     @Override
                     public void afterCommit() {
+                        System.out.println("DELIVERY CONFIRMED SEND NOTIFICATION");
                         producer.sendOrderChangedStatusEvent(order);
                     }
                 }

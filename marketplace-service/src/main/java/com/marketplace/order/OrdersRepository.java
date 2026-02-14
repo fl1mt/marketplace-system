@@ -1,6 +1,6 @@
 package com.marketplace.order;
+import com.marketplace.events.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;

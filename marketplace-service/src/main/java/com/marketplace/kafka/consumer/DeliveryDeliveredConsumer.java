@@ -3,11 +3,12 @@ package com.marketplace.kafka.consumer;
 import com.marketplace.events.DeliveryDeliveredEvent;
 import com.marketplace.kafka.producer.OrderEventProducer;
 import com.marketplace.order.Order;
-import com.marketplace.order.OrderStatus;
+import com.marketplace.events.OrderStatus;
 import com.marketplace.order.OrdersRepository;
 import com.marketplace.user.auth.DataAuthService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -26,6 +27,8 @@ public class DeliveryDeliveredConsumer {
         this.producer = producer;
     }
 
+
+    @Transactional
     @KafkaListener(
             topics = "delivery-delivered",
             groupId = "marketplace-service"
@@ -42,6 +45,7 @@ public class DeliveryDeliveredConsumer {
                 new TransactionSynchronization() {
                     @Override
                     public void afterCommit() {
+                        System.out.println("DELIVERY DELIVERED SEND NOTIFICATION");
                         producer.sendOrderChangedStatusEvent(order);
                     }
                 }

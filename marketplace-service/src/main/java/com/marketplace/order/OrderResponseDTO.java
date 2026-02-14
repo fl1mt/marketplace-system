@@ -1,6 +1,7 @@
 package com.marketplace.order;
 
 import com.marketplace.delivery.DeliveryAddressResponseDTO;
+import com.marketplace.events.OrderStatus;
 import com.marketplace.orderItem.OrderItemResponseDTO;
 import com.marketplace.user.UserPublicDTO;
 

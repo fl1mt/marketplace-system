@@ -2,8 +2,6 @@ package com.marketplace.kafka.producer;
 import com.marketplace.events.OrderCreatedEvent;
 import com.marketplace.events.OrderStatusChangedEvent;
 import com.marketplace.order.Order;
-import com.marketplace.order.OrderStatus;
-import com.marketplace.order.OrdersRepository;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 

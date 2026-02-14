@@ -2,6 +2,7 @@ package com.marketplace.order;
 
 import com.marketplace.delivery.DeliveryAddress;
 import com.marketplace.errors.BadRequestException;
+import com.marketplace.events.OrderStatus;
 import com.marketplace.kafka.producer.OrderEventProducer;
 import com.marketplace.orderItem.OrderItem;
 import com.marketplace.orderItem.OrderItemRequestDTO;
