@@ -112,6 +112,15 @@ public class OrderService {
 
         order.setOrderStatus(OrderStatus.COMPLETED);
         ordersRepository.save(order);
+
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        orderEventProducer.sendOrderChangedStatusEvent(order);
+                    }
+                }
+        );
     }
 
     private void validateOrderRequest(OrderRequestDTO request) {
