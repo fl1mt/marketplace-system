@@ -18,12 +18,12 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByProduct(@PathVariable UUID productId){
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByProduct(@PathVariable("productId") UUID productId){
         return ResponseEntity.ok(reviewService.getReviewsByProduct(productId));
     }
     @PostMapping
     public ResponseEntity<ReviewResponseDTO> createReview(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                          @PathVariable UUID productId,
+                                                          @PathVariable("productId") UUID productId,
                                                           @RequestBody @Valid ReviewRequestDTO reviewRequestDTO){
         return ResponseEntity.ok(reviewService.createProductReview(userDetails.getId(), productId, reviewRequestDTO));
     }

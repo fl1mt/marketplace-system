@@ -2,10 +2,11 @@ package com.marketplace.review;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ReviewRequestDTO {
-    @NotNull
+    @NotBlank(message = "Rating cannot be empty.")
     @Min(1)
     @Max(5)
     private Integer rating;

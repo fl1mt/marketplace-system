@@ -2,15 +2,16 @@ package com.marketplace.orderItem;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class OrderItemRequestDTO {
-    @NotNull(message = "Product ID is required!")
+    @NotBlank(message = "Product ID is required!")
     private UUID productId;
-    @NotNull(message = "Quantity is required!")
+    @NotBlank(message = "Quantity is required!")
     @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
     @JsonIgnore

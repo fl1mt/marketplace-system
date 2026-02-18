@@ -33,8 +33,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDTO createProductReview(UUID userId, UUID productId, ReviewRequestDTO reviewRequestDTO){
         User user = dataAuthService.checkUsersId(userId);
-        Product product = productsRepository.findByIdForUpdate(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+        Product product = dataAuthService.checkProduct(productId);
 
         if (reviewRepository
                 .existsByUserIdAndProductId(userId, productId)) {
@@ -51,8 +50,7 @@ public class ReviewService {
     }
 
     public List<ReviewResponseDTO> getReviewsByProduct(UUID productId){
-        Product product = productsRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found!"));
+        Product product = dataAuthService.checkProduct(productId);
 
         List<Review> reviews = reviewRepository.findAllByProductId(product.getId());
         return reviewMapper.toResponseDtoList(reviews);

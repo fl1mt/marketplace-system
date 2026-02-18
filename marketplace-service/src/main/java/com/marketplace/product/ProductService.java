@@ -2,7 +2,7 @@ package com.marketplace.product;
 import com.marketplace.errors.BadRequestException;
 import com.marketplace.errors.NotFoundException;
 import com.marketplace.product.productDiscount.ProductDiscountService;
-import jakarta.validation.constraints.Null;
+import com.marketplace.user.auth.DataAuthService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +15,14 @@ public class ProductService {
     private final ProductsRepository productsRepository;
     private final ProductMapper productMapper;
     private final ProductDiscountService productDiscountService;
+    private final DataAuthService dataAuthService;
 
 
-    public ProductService(ProductsRepository productsRepository, ProductMapper productMapper, ProductDiscountService productDiscountService) {
+    public ProductService(ProductsRepository productsRepository, ProductMapper productMapper, ProductDiscountService productDiscountService, DataAuthService dataAuthService) {
         this.productsRepository = productsRepository;
         this.productMapper = productMapper;
         this.productDiscountService = productDiscountService;
+        this.dataAuthService = dataAuthService;
     }
 
     @Transactional
@@ -33,19 +35,16 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<ProductResponseDTO> getProducts(){
-        List<Product> products = productsRepository.findAll();
-        return productMapper.toResponseDtoList(products);
+        return productMapper.toResponseDtoList(productsRepository.findAll());
     }
 
     public ProductResponseDTO getProduct(UUID productId){
-        Product product = productsRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found!"));
+        Product product = dataAuthService.checkProduct(productId);
         return productMapper.toResponseDTO(product);
     }
 
     public ProductResponseDTO updateProduct(UUID productId, ProductRequestDTO productRequestDTO){
-        Product product = productsRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found!"));
+        Product product = dataAuthService.checkProduct(productId);
 
         if (isSame(product, productRequestDTO)) {
             throw new BadRequestException("No changes detected");

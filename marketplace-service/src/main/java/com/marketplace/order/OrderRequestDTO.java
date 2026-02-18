@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class OrderRequestDTO {
-    @NotNull(message = "Delivery address is required!")
+    @NotBlank(message = "Delivery address is required!")
     private UUID deliveryAddressId;
     private List<OrderItemRequestDTO> items;
     public void setDeliveryAddressId(UUID deliveryAddressId) {

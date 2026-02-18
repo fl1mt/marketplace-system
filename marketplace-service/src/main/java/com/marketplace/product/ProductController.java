@@ -23,10 +23,9 @@ public class ProductController {
     public ResponseEntity<List<ProductResponseDTO>> getProducts(){
         return ResponseEntity.ok(productService.getProducts());
     }
-    @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO productRequestDTO){
-        return ResponseEntity.ok(productService.createProduct(productRequestDTO));
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable("productId") UUID productId){
+        return ResponseEntity.ok(productService.getProduct(productId));
     }
     @PutMapping("/{productId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -34,14 +33,15 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(productId, productRequestDTO));
     }
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable("productId") UUID productId){
-        return ResponseEntity.ok(productService.getProduct(productId));
+    @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO productRequestDTO){
+        return ResponseEntity.ok(productService.createProduct(productRequestDTO));
     }
 
     @PostMapping("/{productId}/stock-adjustments")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> adjustProductStock(@PathVariable("productId") UUID productId, @RequestBody StockAdjustmentRequest request){
+    public ResponseEntity<Void> adjustProductStock(@PathVariable("productId") UUID productId, @RequestBody @Valid StockAdjustmentRequest request){
         stockService.adjustStock(productId, request.amount());
         return ResponseEntity.ok().build();
     }

@@ -11,13 +11,13 @@ public class ProductRequestDTO {
     private String name;
     @NotBlank(message = "Product description is required!")
     private String description;
-    @NotNull(message = "Product category is required!")
+    @NotBlank(message = "Product category is required!")
     private ProductType category;
-    @NotNull(message = "Product discountPercentage is required!")
+    @NotBlank(message = "Product discountPercentage is required!")
     private Integer discountPercentage;
-    @NotNull(message = "Product inventoryStock is required!")
+    @NotBlank(message = "Product inventoryStock is required!")
     private Integer inventoryStock;
-    @NotNull(message = "Product basePrice is required!")
+    @NotBlank(message = "Product basePrice is required!")
     private BigDecimal basePrice;
 
     public String getName() {

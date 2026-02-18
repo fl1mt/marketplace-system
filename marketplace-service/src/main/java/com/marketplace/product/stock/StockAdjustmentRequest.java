@@ -1,3 +1,7 @@
 package com.marketplace.product.stock;
 
-public record StockAdjustmentRequest (int amount){ }
+import jakarta.validation.constraints.NotNull;
+
+public record StockAdjustmentRequest (
+        @NotNull int amount
+){ }

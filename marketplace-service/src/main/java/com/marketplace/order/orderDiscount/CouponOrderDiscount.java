@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 public class CouponOrderDiscount implements OrderDiscountStrategy {
     @Override
     public BigDecimal calculateOrderDiscount(Order order) {
-        String promoCode = order.getPromoCode();
         // promocode discount
         return BigDecimal.ZERO;
     }

@@ -6,10 +6,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ReviewResponseDTO {
-    @NotNull(message = "Review ID is required!")
     private UUID id;
     private UserPublicDTO userPublicDTO;
-    @NotNull(message = "Review rating is required!")
     private Integer rating;
     private String description;
     private LocalDateTime reviewDate;

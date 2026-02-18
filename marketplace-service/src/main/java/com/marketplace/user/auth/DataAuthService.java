@@ -32,7 +32,7 @@ public class DataAuthService {
     }
     public User checkUsersId(UUID userId){
         User user = usersRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Invalid User data!"));
         return user;
     }
     public DeliveryAddress checkUsersDeliveryAddress(UUID deliveryAddressId, UUID userId){

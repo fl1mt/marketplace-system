@@ -12,9 +12,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductsRepository extends JpaRepository<Product, UUID> {
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select p from Product p where p.id = :productId")
-    Optional<Product> findByIdForUpdate(UUID productId);
     @Modifying
     @Query("update Product p set p.inventoryStock = p.inventoryStock - :quantity where p.id = :productId and p.inventoryStock >= :quantity")
     int reserveStock(@Param("productId") UUID productId, @Param("quantity") int quantity);

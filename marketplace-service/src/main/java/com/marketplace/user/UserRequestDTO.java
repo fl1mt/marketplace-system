@@ -1,14 +1,12 @@
 package com.marketplace.user;
-
-import jakarta.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotBlank;
 public class UserRequestDTO {
-    @NotNull(message = "Phone number is required!")
+    @NotBlank(message = "Phone number is required!")
     private String phoneNumber;
-    @NotNull(message = "Firstname is required!")
+    @NotBlank(message = "Firstname is required!")
     private String firstname;
     private String lastname;
-    @NotNull(message = "Email is required!")
+    @NotBlank(message = "Email is required!")
     private String email;
 
     public void setPhoneNumber(String phoneNumber) {

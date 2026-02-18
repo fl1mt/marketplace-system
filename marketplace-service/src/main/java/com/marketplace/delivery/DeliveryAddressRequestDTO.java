@@ -1,16 +1,15 @@
 package com.marketplace.delivery;
 
-import jakarta.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.NotBlank;
 public class DeliveryAddressRequestDTO {
-    @NotNull(message = "City is required!")
+    @NotBlank(message = "City is required!")
     private String city;
-    @NotNull(message = "Street is required!")
+    @NotBlank(message = "Street is required!")
     private String street;
-    @NotNull(message = "House is required!")
+    @NotBlank(message = "House is required!")
     private String house;
     private String apartment;
-    @NotNull(message = "Index is required!")
+    @NotBlank(message = "Index is required!")
     private String index;
 
     public void setCity(String city) {

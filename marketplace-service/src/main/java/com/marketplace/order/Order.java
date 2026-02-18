@@ -39,8 +39,6 @@ public class Order {
     private BigDecimal subtotal;
     @Column(nullable = false)
     private BigDecimal finalTotal;
-    @Column
-    private String promoCode;
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -130,14 +128,6 @@ public class Order {
 
     public BigDecimal getSubtotal() {
         return subtotal;
-    }
-
-    public void setPromoCode(String promoCode) {
-        this.promoCode = promoCode;
-    }
-
-    public String getPromoCode() {
-        return promoCode;
     }
 
     public void setOrderStatus(OrderStatus orderStatus) {
