@@ -49,23 +49,28 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDTO createUsersOrder(UUID userId,
-                                             OrderRequestDTO orderRequestDTO){
-        validateOrderRequest(orderRequestDTO);
+    public OrderResponseDTO createUsersOrder(UUID userId, OrderRequestDTO orderRequestDTO){
+        if (orderRequestDTO.getItems() == null || orderRequestDTO.getItems().isEmpty()) {
+            throw new BadRequestException("Order must contain at least one item");
+        }
 
         User user = dataAuthService.checkUsersId(userId);
         DeliveryAddress deliveryAddress = dataAuthService.checkUsersDeliveryAddress(orderRequestDTO.getDeliveryAddressId(), userId);
 
-        Order newOrder = createDraftOrder(user, deliveryAddress, orderRequestDTO);
+        Order newOrder = orderMapper.toEntity(orderRequestDTO);
+
+        createDraftOrder(user, deliveryAddress, newOrder);
         ordersRepository.save(newOrder);
 
-        List<OrderItem> orderItems = createOrderItems(newOrder, orderRequestDTO.getItems());
+        List<OrderItemCommand> orderItemCommands = orderRequestDTO.getItems().stream()
+                .map(dto -> new OrderItemCommand(dto.getProductId(), dto.getQuantity()))
+                .toList();
+
+        List<OrderItem> orderItems = createOrderItems(newOrder, orderItemCommands);
         orderItemsRepository.saveAll(orderItems);
 
         stockService.reserveStock(orderItems);
-
         requestDelivery(newOrder);
-
         return buildResponse(newOrder, orderItems);
     }
 
@@ -110,9 +115,15 @@ public class OrderService {
 
         switch (order.getOrderStatus()){
             case DELIVERY_CONFIRMED, WAITING_FOR_RECEIVE -> {
-                stockService.returnStockWhenOrderCanceled
-                        (orderItemsRepository.findByOrderIdWithProducts(orderId));
-                orderEventProducer.sendOrderCancelledEvent(order);
+                stockService.returnStockWhenOrderCanceled(orderItemsRepository.findByOrderIdWithProducts(orderId));
+                TransactionSynchronizationManager.registerSynchronization(
+                        new TransactionSynchronization() {
+                            @Override
+                            public void afterCommit() {
+                                orderEventProducer.sendOrderCancelledEvent(order);
+                            }
+                        }
+                );
             }
             case IN_TRANSIT -> throw new BadRequestException
                     ("The order is on the way. You can cancel it when it arrives.");
@@ -150,33 +161,43 @@ public class OrderService {
         );
     }
 
-    private void validateOrderRequest(OrderRequestDTO request) {
-        if (request.getItems() == null || request.getItems().isEmpty()) {
-            throw new BadRequestException("Order must contain at least one item");
-        }
+    @Transactional
+    public void createOrderFromCart(UUID userId, UUID deliveryAddressId, Map<UUID, Integer> cart) {
+        Order order = new Order();
+        createDraftOrder(dataAuthService.checkUsersId(userId), dataAuthService.checkUsersDeliveryAddress(deliveryAddressId,
+                userId), order);
+        ordersRepository.save(order);
+
+        List<OrderItemCommand> orderItemCommands = cart.entrySet().stream()
+                .map(item -> new OrderItemCommand(item.getKey(), item.getValue()))
+                .toList();
+
+        List<OrderItem> orderItems = createOrderItems(order, orderItemCommands);
+        orderItemsRepository.saveAll(orderItems);
+
+        stockService.reserveStock(orderItems);
+        requestDelivery(order);
     }
 
-    private Order createDraftOrder(User user, DeliveryAddress address, OrderRequestDTO request) {
-        Order order = orderMapper.toEntity(request);
+    private void createDraftOrder(User user, DeliveryAddress address, Order order) {
         order.setUser(user);
         order.setAddress(address);
         order.setSubtotal(BigDecimal.ZERO);
         order.setDiscountAmount(BigDecimal.ZERO);
         order.setFinalTotal(BigDecimal.ZERO);
         order.setOrderStatus(OrderStatus.CREATED);
-        return order;
     }
 
-    private List<OrderItem> createOrderItems(Order order, List<OrderItemRequestDTO> items) {
+    private List<OrderItem> createOrderItems(Order order, List<OrderItemCommand> items) {
 
         List<OrderItem> result = new ArrayList<>();
 
-        for (OrderItemRequestDTO itemDTO : items) {
-            Product product = dataAuthService.checkProduct(itemDTO.getProductId());
+        for (OrderItemCommand orderItem : items) {
+            Product product = dataAuthService.checkProduct(orderItem.productId());
             OrderItem item = new OrderItem();
             item.setOrder(order);
             item.setProduct(product);
-            item.setQuantity(itemDTO.getQuantity());
+            item.setQuantity(orderItem.quantity());
             item.setPriceAtPurchase(product.getFinalPrice());
 
             result.add(item);
@@ -191,11 +212,13 @@ public class OrderService {
         return dto;
     }
 
-    private void requestDelivery(Order order) {
+    public void requestDelivery(Order order) {
         if(order.getOrderStatus() != OrderStatus.CREATED){
             throw new BadRequestException("The order must have created status.");
         }
         order.setOrderStatus(OrderStatus.DELIVERY_REQUESTED);
+        ordersRepository.save(order);
+
         TransactionSynchronizationManager.registerSynchronization(
                 new TransactionSynchronization() {
                     @Override

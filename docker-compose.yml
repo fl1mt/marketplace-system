@@ -23,3 +23,13 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  redis:
+        image: redis:7
+        container_name: redis
+        ports:
+          - "6379:6379"
+        volumes:
+          - redis-data:/data
+        command: redis-server --appendonly yes
+volumes:
+  redis-data:
